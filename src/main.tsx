@@ -7,6 +7,8 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/integration/react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/authStore'
 import { handleServerError } from '@/utils/handle-server-error'
@@ -15,6 +17,7 @@ import { ThemeProvider } from './context/theme-context'
 import './index.css'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
+import { store, persistor } from './store/store'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -88,13 +91,17 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
-          <FontProvider>
-            <RouterProvider router={router} />
-          </FontProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
+              <FontProvider>
+                <RouterProvider router={router} />
+              </FontProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </PersistGate>
+      </Provider>
     </StrictMode>
   )
 }
